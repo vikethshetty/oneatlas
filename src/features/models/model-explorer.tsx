@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { AiModel } from "@/lib/models";
+import type { AiModel } from "@/features/models/types";
 
 const categories = ["All models", "Chat", "Image", "Code", "Audio"] as const;
 

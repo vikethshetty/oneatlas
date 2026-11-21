@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ModelExplorer } from "@/components/model-explorer";
+import { ModelExplorer } from "@/features/models/model-explorer";
 
 const providerMarks = ["◎", "A", "✦", "◈", "✳"];
 

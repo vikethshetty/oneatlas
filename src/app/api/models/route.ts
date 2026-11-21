@@ -1,4 +1,4 @@
-import { getPrismaClient } from "@/lib/prisma";
+import { getPrismaClient } from "@/lib/db/prisma";
 
 export const runtime = "nodejs";
 

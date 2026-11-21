@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OneAtlas.dev
 
-## Getting Started
+An AI model discovery directory built with Next.js, React, TypeScript, Tailwind CSS, PostgreSQL, and Prisma.
 
-First, run the development server:
+## Project structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```text
+app repository root
+├── src/
+│   ├── app/                    Next.js routes, layouts, styles, and API handlers
+│   │   └── api/models/         Model catalog API
+│   ├── components/             Shared interface components
+│   ├── features/models/        Model explorer and model types
+│   ├── lib/db/                 Prisma client
+│   └── generated/prisma/       Generated Prisma Client (ignored by Git)
+├── prisma/                     Database schema, migrations, and seed
+├── public/                     Static assets
+└── project config files        Next.js, TypeScript, ESLint, and npm
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Create `.env` in the project root and set `DATABASE_URL` to your PostgreSQL connection string. Keep `.env` local; Git ignores it.
+2. Install dependencies with `npm install`.
+3. Start the app with `npm run dev`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Database commands
 
-## Learn More
+- `npm run db:generate` generates Prisma Client.
+- `npm run db:migrate` applies pending migrations to the development database.
+- `npm run db:seed` inserts the starter model catalog.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The homepage reads the model catalog from `GET /api/models`.
