@@ -1,69 +1,44 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ModelExplorer } from "@/components/model-explorer";
+
+const providerMarks = ["◎", "A", "✦", "◈", "✳"];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <section className="hero-wrap">
+        <div className="hero-glow hero-glow-one" />
+        <div className="hero-glow hero-glow-two" />
+        <div className="hero-content">
+          <div className="announcement"><span className="announcement-dot" /> A clearer way to explore AI <span aria-hidden="true">↗</span></div>
+          <h1>Every model.<br /><span>One atlas.</span></h1>
+          <p className="hero-copy">The world of AI moves fast. Find the right model for the way you think, build, and create.</p>
+          <div className="hero-actions">
+            <Link className="button button-dark hero-cta" href="#models">Explore models <span aria-hidden="true">↓</span></Link>
+            <Link className="button button-light" href="#about"><span className="play-icon" aria-hidden="true">▶</span> How it works</Link>
+          </div>
+          <div className="hero-social-proof">
+            <div className="avatar-stack" aria-hidden="true"><span>J</span><span>M</span><span>S</span><span>+</span></div>
+            <div><strong>Built for the curious</strong><span>One place to find what’s next.</span></div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="orbit-art" aria-hidden="true">
+          <div className="orbit orbit-a" /><div className="orbit orbit-b" /><div className="orbit orbit-c" />
+          <div className="orbit-core"><span className="brand-mark brand-mark-large"><span /></span></div>
+          <div className="orbit-node node-one">◎</div><div className="orbit-node node-two">A</div><div className="orbit-node node-three">✦</div><div className="orbit-node node-four">◈</div>
+          <div className="orbit-label label-one">Language</div><div className="orbit-label label-two">Vision</div>
         </div>
-      </main>
-    </div>
+        <div className="hero-bottom"><span>THE INDEPENDENT AI MODEL DIRECTORY</span><div className="provider-line">{providerMarks.map((mark, i) => <span key={i}>{mark}</span>)}<small>and many more</small></div></div>
+      </section>
+
+      <ModelExplorer />
+
+      <section className="closing-banner" id="about">
+        <div className="closing-spark" aria-hidden="true">✳</div>
+        <div><p className="eyebrow">KEEP EXPLORING</p><h2>The best model is the one that works for you.</h2><p>Compare your options. Follow your curiosity. Find your fit.</p></div>
+        <Link className="button button-dark" href="#models">Start exploring <span aria-hidden="true">↗</span></Link>
+      </section>
+      <footer className="site-footer"><Link className="brand" href="/"><span className="brand-mark"><span /></span><span>oneatlas<span className="brand-dot">.</span></span></Link><span>Make sense of the model universe.</span><span>© 2025 OneAtlas.dev</span></footer>
+    </main>
   );
 }

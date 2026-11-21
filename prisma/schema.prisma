@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Provider {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  models    Model[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Model {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  category    String
+  description String
+  context     String
+  pricing     String
+  badge       String?
+  mark        String
+  tone        String
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([providerId])
+}
