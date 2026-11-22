@@ -37,3 +37,11 @@ model Model {
   @@index([providerId])
   @@index([rankingScore])
 }
+
+model RateLimitBucket {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}

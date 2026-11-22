@@ -1,4 +1,5 @@
-import { adminKeyIsConfigured, isAdminRequest } from "@/backend/auth/admin-auth";
+import { adminAuthIsConfigured, isAdminRequest, isSameOriginRequest } from "@/backend/auth/admin-auth";
+import { consumeRateLimit } from "@/backend/auth/rate-limit";
 import {
   CatalogConflictError,
   createModel as createCatalogModel,
@@ -11,12 +12,26 @@ import {
 import { parseModelInput } from "@/backend/validation/model-input";
 import type { ModelWriteInput } from "@/backend/validation/model-input";
 
-function requireAdmin(request: Request): Response | null {
-  if (!adminKeyIsConfigured()) {
-    return Response.json({ error: "Admin API is not configured." }, { status: 503 });
+async function requireAdmin(request: Request): Promise<Response | null> {
+  if (!adminAuthIsConfigured()) {
+    return Response.json({ error: "Admin sign-in is not configured." }, { status: 503 });
+  }
+  if (!isSameOriginRequest(request)) {
+    return Response.json({ error: "Same-origin request required." }, { status: 403 });
+  }
+  try {
+    const limit = await consumeRateLimit("admin-write", request, 60, 60 * 1000);
+    if (!limit.allowed) {
+      return Response.json(
+        { error: "Too many catalog changes. Try again shortly." },
+        { status: 429, headers: { "retry-after": String(limit.retryAfterSeconds) } },
+      );
+    }
+  } catch {
+    return Response.json({ error: "Catalog writes are temporarily unavailable." }, { status: 503 });
   }
   if (!isAdminRequest(request)) {
-    return Response.json({ error: "Admin authorization required." }, { status: 401 });
+    return Response.json({ error: "Admin sign-in required." }, { status: 401 });
   }
   return null;
 }
@@ -51,7 +66,7 @@ export async function getModel(slug: string) {
 }
 
 export async function createModel(request: Request) {
-  const denied = requireAdmin(request);
+  const denied = await requireAdmin(request);
   if (denied) return denied;
 
   let body: unknown;
@@ -72,7 +87,7 @@ export async function createModel(request: Request) {
 }
 
 export async function updateModel(request: Request, slug: string) {
-  const denied = requireAdmin(request);
+  const denied = await requireAdmin(request);
   if (denied) return denied;
 
   let body: unknown;
@@ -91,7 +106,7 @@ export async function updateModel(request: Request, slug: string) {
 }
 
 export async function deleteModel(request: Request, slug: string) {
-  const denied = requireAdmin(request);
+  const denied = await requireAdmin(request);
   if (denied) return denied;
   try {
     await removeModel(slug);
