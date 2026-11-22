@@ -27,6 +27,7 @@ model Model {
   badge       String?
   mark        String
   tone        String
+  rankingScore Int     @default(0)
   providerId  String
   provider    Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
   createdAt   DateTime @default(now())
@@ -34,4 +35,5 @@ model Model {
 
   @@index([category])
   @@index([providerId])
+  @@index([rankingScore])
 }
