@@ -1,6 +1,6 @@
 import { listRankedModels } from "@/backend/services/model.service";
 
-const categories = ["Chat", "Image", "Code", "Audio"];
+const categories = ["Chat", "Image", "Code", "Audio", "Video", "Embedding", "Speech", "Rerank"];
 
 export async function getRankings(request: Request) {
   const category = new URL(request.url).searchParams.get("category") ?? undefined;

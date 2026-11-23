@@ -24,7 +24,7 @@ test("model input accepts valid catalog fields", () => {
 
 test("model input rejects malformed slugs, unsupported categories, and invalid scores", () => {
   assert.equal(parseModelInput({ ...validModel, slug: "Bad Slug" }, true).ok, false);
-  assert.equal(parseModelInput({ ...validModel, category: "Video" }, true).ok, false);
+  assert.equal(parseModelInput({ ...validModel, category: "Robotics" }, true).ok, false);
   assert.equal(parseModelInput({ ...validModel, rankingScore: 0 }, true).ok, false);
   assert.equal(parseModelInput({ ...validModel, rankingScore: 101 }, true).ok, false);
   assert.equal(parseModelInput({ ...validModel, rankingScore: 50.5 }, true).ok, false);

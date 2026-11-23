@@ -30,11 +30,15 @@ Next.js requires route entry files under `src/app`. Those files only connect URL
 ## Features
 
 - Search and category filters on the model directory
+- Full model catalog at `/models`; homepage links open the dedicated directory
+- Filter by lab, model type, modality, and open weights; sort by input price, context length, or release date
 - Keyboard search shortcut (`Ctrl+K` / `⌘K`) and a retry action when catalog loading fails
 - Model detail pages at `/models/[slug]`
 - Side-by-side comparison for up to three models at `/compare`
 - Provider directory at `/providers` and provider pages at `/providers/[slug]`
 - Category-filtered model rankings at `/rankings`
+- Lab directory at `/labs` and API provider directory at `/providers`
+- Cross-model benchmark score table at `/benchmarks`, with sources attached to each score
 - Editable OneAtlas editorial scores (0–100) in the catalog admin
 - Catalog management screen at `/admin` with secure admin sessions
 - Public model reads and protected catalog write endpoints
@@ -65,6 +69,8 @@ Generate a session secret locally with `node -p "require('node:crypto').randomBy
 
 Catalog write endpoints require an active admin session. Invalid fields receive `400`, missing or expired sessions receive `401`, excessive requests receive `429`, and unavailable auth or database services receive `503`.
 
+Model records include modality, capability, context-token, input/output price, release-date, and open-weight fields. Editors can attach multiple named benchmark scores and their source labels from `/admin`; seed benchmark values are explicitly illustrative and are not independent evaluation results.
+
 ## Database commands
 
 - `npm run db:generate` generates Prisma Client.
@@ -74,7 +80,7 @@ Catalog write endpoints require an active admin session. Invalid fields receive 
 - `npm test` runs validation and admin-session unit tests.
 - `npm run lint` runs ESLint.
 
-Run `npm run db:migrate` after pulling schema changes locally. Scores are set by a catalog editor in `/admin`; unscored models remain out of the rankings. Starter ranking scores in `prisma/seed.ts` are illustrative editorial values, not independent benchmark results.
+Run `npm run db:migrate` after pulling schema changes locally. Scores are set by a catalog editor in `/admin`; unscored models remain out of the rankings. Starter rankings and benchmark scores in `prisma/seed.ts` are illustrative values, not independent benchmark results. Catalog pricing and specs are sample starter records and should be refreshed against provider sources before production use.
 
 ## Deployment
 

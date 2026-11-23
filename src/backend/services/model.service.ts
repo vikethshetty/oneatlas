@@ -10,7 +10,7 @@ import {
   updateModelRecord,
   upsertProvider,
 } from "@/backend/repositories/model.repository";
-import type { AiModel, ModelCategory, ModelTone } from "@/shared/types/model";
+import type { AiModel, BenchmarkScore, ModelCategory, ModelTone } from "@/shared/types/model";
 import type { ModelWriteInput } from "@/backend/validation/model-input";
 
 export class ModelNotFoundError extends Error {}
@@ -23,6 +23,9 @@ function isUniqueConstraintError(error: unknown) {
 function toModel(record: {
   slug: string; name: string; category: string; description: string; context: string;
   pricing: string; badge: string | null; mark: string; tone: string; rankingScore: number;
+  modelType: string; modalities: string[]; capabilities: string[]; contextTokens: number | null;
+  inputPrice: number | null; outputPrice: number | null; releasedAt: Date | null; openWeights: boolean;
+  benchmarks: { name: string; score: number; source: string | null }[];
   provider: { name: string; slug: string };
 }): AiModel {
   return {
@@ -38,6 +41,15 @@ function toModel(record: {
     ...(record.badge ? { badge: record.badge } : {}),
     mark: record.mark,
     tone: record.tone as ModelTone,
+    modelType: record.modelType,
+    modalities: record.modalities,
+    capabilities: record.capabilities,
+    contextTokens: record.contextTokens,
+    inputPrice: record.inputPrice,
+    outputPrice: record.outputPrice,
+    releasedAt: record.releasedAt?.toISOString() ?? null,
+    openWeights: record.openWeights,
+    benchmarks: record.benchmarks.map((benchmark): BenchmarkScore => ({ name: benchmark.name, score: benchmark.score, source: benchmark.source })),
   };
 }
 

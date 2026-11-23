@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { ModelExplorer } from "@/frontend/features/models/model-explorer";
 
 const providerMarks = ["◎", "A", "✦", "◈", "✳"];
@@ -31,7 +32,9 @@ export function HomePage() {
         <div className="hero-bottom"><span>THE INDEPENDENT AI MODEL DIRECTORY</span><div className="provider-line">{providerMarks.map((mark, i) => <span key={i}>{mark}</span>)}<small>and many more</small></div></div>
       </section>
 
-      <ModelExplorer />
+      <Suspense fallback={<section className="catalog-section" id="models" aria-busy="true"><p className="directory-message">Loading model directory…</p></section>}>
+        <ModelExplorer />
+      </Suspense>
 
       <section className="closing-banner" id="about">
         <div className="closing-spark" aria-hidden="true">✳</div>

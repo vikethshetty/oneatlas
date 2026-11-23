@@ -4,7 +4,7 @@ import type { ModelWriteInput } from "@/backend/validation/model-input";
 
 export function findAllModels() {
   return getPrismaClient().model.findMany({
-    include: { provider: { select: { name: true, slug: true } } },
+    include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
     orderBy: { name: "asc" },
   });
 }
@@ -12,7 +12,7 @@ export function findAllModels() {
 export function findRankedModels(category?: string) {
   return getPrismaClient().model.findMany({
     where: { rankingScore: { gt: 0 }, ...(category ? { category } : {}) },
-    include: { provider: { select: { name: true, slug: true } } },
+    include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
     orderBy: [{ rankingScore: "desc" }, { name: "asc" }],
   });
 }
@@ -20,7 +20,7 @@ export function findRankedModels(category?: string) {
 export function findModelBySlug(slug: string) {
   return getPrismaClient().model.findUnique({
     where: { slug },
-    include: { provider: { select: { name: true, slug: true } } },
+    include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
   });
 }
 
@@ -35,17 +35,19 @@ export function upsertProvider(input: Pick<ModelWriteInput, "providerSlug" | "pr
 type ModelFields = Omit<ModelWriteInput, "slug" | "providerSlug" | "providerName"> & { providerId: string };
 
 export function createModelRecord(slug: string, fields: ModelFields) {
+  const { benchmarks, ...modelFields } = fields;
   return getPrismaClient().model.create({
-    data: { slug, ...fields, badge: fields.badge ?? null },
-    include: { provider: { select: { name: true, slug: true } } },
+    data: { slug, ...modelFields, badge: modelFields.badge ?? null, benchmarks: { create: benchmarks } },
+    include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
   });
 }
 
 export function updateModelRecord(slug: string, fields: ModelFields) {
+  const { benchmarks, ...modelFields } = fields;
   return getPrismaClient().model.update({
     where: { slug },
-    data: { ...fields, badge: fields.badge ?? null },
-    include: { provider: { select: { name: true, slug: true } } },
+    data: { ...modelFields, badge: modelFields.badge ?? null, benchmarks: { deleteMany: {}, create: benchmarks } },
+    include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
   });
 }
 
@@ -68,7 +70,7 @@ export function findProviderBySlug(slug: string) {
     where: { slug },
     include: {
       models: {
-        include: { provider: { select: { name: true, slug: true } } },
+        include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
         orderBy: [{ rankingScore: "desc" }, { name: "asc" }],
       },
       _count: { select: { models: true } },

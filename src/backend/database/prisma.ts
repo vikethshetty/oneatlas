@@ -9,7 +9,12 @@ export function getPrismaClient() {
   }
 
   if (!prismaGlobal.oneatlasPrisma) {
-    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg({
+      connectionString: process.env.DATABASE_URL,
+      connectionTimeoutMillis: 5_000,
+      query_timeout: 12_000,
+      statement_timeout: 12_000,
+    });
     prismaGlobal.oneatlasPrisma = new PrismaClient({ adapter });
   }
 

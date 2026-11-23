@@ -38,11 +38,21 @@ export function ModelDetail({ slug }: { slug: string }) {
         <Link className="button button-dark" href="/#models">Back to model directory <span aria-hidden="true">↓</span></Link>
       </section>
       <section className="detail-specs" aria-label="Model specifications">
-        <article><span>Provider</span><strong>{model.provider}</strong></article>
-        <article><span>OneAtlas editorial score</span><strong>{model.rankingScore ? `${model.rankingScore} / 100` : "Unranked"}</strong></article>
+        <article><span>Lab</span><strong><Link href={`/providers/${model.providerSlug}`}>{model.provider}</Link></strong></article>
+        <article><span>Model type</span><strong>{model.modelType}</strong></article>
         <article><span>Category</span><strong>{model.category}</strong></article>
-        <article><span>Context / capability</span><strong>{model.context}</strong></article>
-        <article><span>Pricing</span><strong>{model.pricing}</strong></article>
+        <article><span>Context window</span><strong>{model.contextTokens ? `${model.contextTokens.toLocaleString()} tokens` : model.context}</strong></article>
+        <article><span>Input price / 1M tokens</span><strong>{model.inputPrice === null ? "Not listed" : `$${model.inputPrice}`}</strong></article>
+        <article><span>Output price / 1M tokens</span><strong>{model.outputPrice === null ? "Not listed" : `$${model.outputPrice}`}</strong></article>
+        <article><span>Modalities</span><strong>{model.modalities.join(", ") || "Not listed"}</strong></article>
+        <article><span>Capabilities</span><strong>{model.capabilities.join(", ") || "Not listed"}</strong></article>
+        <article><span>Weights</span><strong>{model.openWeights ? "Open weights" : "Closed"}</strong></article>
+        <article><span>Released</span><strong>{model.releasedAt ? new Date(model.releasedAt).toLocaleDateString() : "Not listed"}</strong></article>
+        <article><span>OneAtlas editorial score</span><strong>{model.rankingScore ? `${model.rankingScore} / 100` : "Unranked"}</strong></article>
+      </section>
+      <section className="detail-benchmarks" aria-labelledby="model-benchmarks-heading">
+        <div className="section-heading"><div><p className="eyebrow">EVALUATION</p><h2 id="model-benchmarks-heading">Benchmark results</h2></div><Link className="text-link" href="/benchmarks">Compare benchmarks <span aria-hidden="true">→</span></Link></div>
+        {model.benchmarks.length ? <div className="benchmark-score-list">{model.benchmarks.map((item) => <article key={item.name}><strong>{item.name}</strong><span>{item.source || "Source not provided"}</span><b>{item.score}</b></article>)}</div> : <p className="directory-message">No benchmark results have been added for this model yet.</p>}
       </section>
     </main>
   );

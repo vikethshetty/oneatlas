@@ -28,14 +28,38 @@ model Model {
   mark        String
   tone        String
   rankingScore Int     @default(0)
+  modelType    String  @default("Language model")
+  modalities   String[] @default([])
+  capabilities String[] @default([])
+  contextTokens Int?
+  inputPrice   Float?
+  outputPrice  Float?
+  releasedAt   DateTime?
+  openWeights  Boolean @default(false)
   providerId  String
   provider    Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  benchmarks  BenchmarkScore[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([category])
   @@index([providerId])
   @@index([rankingScore])
+  @@index([modelType])
+  @@index([releasedAt])
+}
+
+model BenchmarkScore {
+  id        String   @id @default(cuid())
+  modelId   String
+  name      String
+  score     Float
+  source    String?
+  updatedAt DateTime @updatedAt
+  model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@unique([modelId, name])
+  @@index([name, score])
 }
 
 model RateLimitBucket {

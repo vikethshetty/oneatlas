@@ -9,13 +9,18 @@ type ModelForm = {
   slug: string; name: string; providerName: string; providerSlug: string;
   category: ModelCategory; description: string; context: string; pricing: string;
   badge: string; mark: string; tone: ModelTone; rankingScore: number;
+  modelType: string; modalities: string; capabilities: string; contextTokens: string;
+  inputPrice: string; outputPrice: string; releasedAt: string; openWeights: boolean; benchmarks: string;
 };
 
 const blankForm: ModelForm = {
   slug: "", name: "", providerName: "", providerSlug: "", category: "Chat",
   description: "", context: "", pricing: "", badge: "", mark: "◎", tone: "green", rankingScore: 50,
+  modelType: "Language model", modalities: "Text", capabilities: "", contextTokens: "",
+  inputPrice: "", outputPrice: "", releasedAt: "", openWeights: false,
+  benchmarks: "",
 };
-const categories: ModelCategory[] = ["Chat", "Image", "Code", "Audio"];
+const categories: ModelCategory[] = ["Chat", "Image", "Code", "Audio", "Video", "Embedding", "Speech", "Rerank"];
 const tones: ModelTone[] = ["violet", "blue", "orange", "green", "pink", "slate"];
 const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -33,6 +38,15 @@ function formFromModel(model: AiModel): ModelForm {
     mark: model.mark,
     tone: model.tone,
     rankingScore: model.rankingScore,
+    modelType: model.modelType,
+    modalities: model.modalities.join(", "),
+    capabilities: model.capabilities.join(", "),
+    contextTokens: model.contextTokens?.toString() ?? "",
+    inputPrice: model.inputPrice?.toString() ?? "",
+    outputPrice: model.outputPrice?.toString() ?? "",
+    releasedAt: model.releasedAt?.slice(0, 10) ?? "",
+    openWeights: model.openWeights,
+    benchmarks: model.benchmarks.map((item) => `${item.name} | ${item.score}${item.source ? ` | ${item.source}` : ""}`).join("\n"),
   };
 }
 
@@ -126,7 +140,20 @@ export function ModelAdmin() {
     setBusy(true);
     setMessage("");
     const { slug, ...fields } = form;
-    const body = editingSlug ? fields : { slug, ...fields };
+    const parseList = (text: string) => text.split(",").map((item) => item.trim()).filter(Boolean);
+    const nullableNumber = (text: string) => text.trim() === "" ? null : Number(text);
+    const benchmarks = fields.benchmarks.split("\n").map((line) => line.split("|").map((part) => part.trim())).filter((parts) => parts.length >= 2 && parts[0] && parts[1]).map(([name, score, source]) => ({ name, score: Number(score), ...(source ? { source } : {}) }));
+    const body = {
+      ...fields,
+      modalities: parseList(fields.modalities),
+      capabilities: parseList(fields.capabilities),
+      contextTokens: nullableNumber(fields.contextTokens),
+      inputPrice: nullableNumber(fields.inputPrice),
+      outputPrice: nullableNumber(fields.outputPrice),
+      releasedAt: fields.releasedAt || null,
+      benchmarks,
+      ...(editingSlug ? {} : { slug }),
+    };
     try {
       const response = await fetch(editingSlug ? `/api/models/${encodeURIComponent(editingSlug)}` : "/api/models", {
         method: editingSlug ? "PUT" : "POST",
@@ -190,8 +217,17 @@ export function ModelAdmin() {
           <label>Provider name<input required maxLength={100} value={form.providerName} onChange={(event) => setForm({ ...form, providerName: event.target.value, providerSlug: toSlug(event.target.value) })} /></label>
           <label>Provider slug<input required pattern="[a-z0-9]+(-[a-z0-9]+)*" value={form.providerSlug} onChange={(event) => setForm({ ...form, providerSlug: event.target.value })} /></label>
           <label>Category<select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value as ModelCategory })}>{categories.map((item) => <option key={item}>{item}</option>)}</select></label>
+          <label>Model type<input required maxLength={50} value={form.modelType} onChange={(event) => setForm({ ...form, modelType: event.target.value })} placeholder="Language model" /></label>
+          <label>Modalities<input value={form.modalities} onChange={(event) => setForm({ ...form, modalities: event.target.value })} placeholder="Text, Image, Audio" /></label>
+          <label>Capabilities<input value={form.capabilities} onChange={(event) => setForm({ ...form, capabilities: event.target.value })} placeholder="Reasoning, Tool calling" /></label>
           <label>Context / capability<input required maxLength={80} value={form.context} onChange={(event) => setForm({ ...form, context: event.target.value })} /></label>
           <label>Pricing<input required maxLength={120} value={form.pricing} onChange={(event) => setForm({ ...form, pricing: event.target.value })} /></label>
+          <label>Context tokens<input type="number" min={0} step={1} value={form.contextTokens} onChange={(event) => setForm({ ...form, contextTokens: event.target.value })} /></label>
+          <label>Input price per 1M tokens ($)<input type="number" min={0} step="any" value={form.inputPrice} onChange={(event) => setForm({ ...form, inputPrice: event.target.value })} /></label>
+          <label>Output price per 1M tokens ($)<input type="number" min={0} step="any" value={form.outputPrice} onChange={(event) => setForm({ ...form, outputPrice: event.target.value })} /></label>
+          <label>Release date<input type="date" value={form.releasedAt} onChange={(event) => setForm({ ...form, releasedAt: event.target.value })} /></label>
+          <label className="admin-checkbox-field"><input type="checkbox" checked={form.openWeights} onChange={(event) => setForm({ ...form, openWeights: event.target.checked })} />Open weights</label>
+          <label className="admin-description-field">Benchmark scores<textarea rows={4} value={form.benchmarks} onChange={(event) => setForm({ ...form, benchmarks: event.target.value })} placeholder={"One per line: benchmark | score | source\nExample: MMLU | 88.4 | MMLU-Pro"} /></label>
           <label>OneAtlas editorial score (1–100)<input required type="number" min={1} max={100} step={1} value={form.rankingScore} onChange={(event) => setForm({ ...form, rankingScore: Number(event.target.value) })} /></label>
           <label>Badge<input maxLength={40} value={form.badge} onChange={(event) => setForm({ ...form, badge: event.target.value })} /></label>
           <label>Card mark<input required maxLength={8} value={form.mark} onChange={(event) => setForm({ ...form, mark: event.target.value })} /></label>

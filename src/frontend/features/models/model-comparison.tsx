@@ -37,8 +37,16 @@ export function ModelComparison() {
             <thead><tr><th scope="col">Details</th>{models.map((model) => <th scope="col" key={model.id}><span className={`model-mark tone-${model.tone}`}>{model.mark}</span><br /><Link href={`/models/${model.id}`}>{model.name}</Link><small>{model.provider}</small></th>)}</tr></thead>
             <tbody>
               <tr><th scope="row">Category</th>{models.map((model) => <td key={model.id}>{model.category}</td>)}</tr>
-              <tr><th scope="row">Context / capability</th>{models.map((model) => <td key={model.id}>{model.context}</td>)}</tr>
-              <tr><th scope="row">Pricing</th>{models.map((model) => <td key={model.id}>{model.pricing}</td>)}</tr>
+              <tr><th scope="row">Model type</th>{models.map((model) => <td key={model.id}>{model.modelType}</td>)}</tr>
+              <tr><th scope="row">Context window</th>{models.map((model) => <td key={model.id}>{model.contextTokens ? `${model.contextTokens.toLocaleString()} tokens` : model.context}</td>)}</tr>
+              <tr><th scope="row">Input price / 1M</th>{models.map((model) => <td key={model.id}>{model.inputPrice === null ? "Not listed" : `$${model.inputPrice}`}</td>)}</tr>
+              <tr><th scope="row">Output price / 1M</th>{models.map((model) => <td key={model.id}>{model.outputPrice === null ? "Not listed" : `$${model.outputPrice}`}</td>)}</tr>
+              <tr><th scope="row">Modalities</th>{models.map((model) => <td key={model.id}>{model.modalities.join(", ") || "Not listed"}</td>)}</tr>
+              <tr><th scope="row">Capabilities</th>{models.map((model) => <td key={model.id}>{model.capabilities.join(", ") || "Not listed"}</td>)}</tr>
+              <tr><th scope="row">Open weights</th>{models.map((model) => <td key={model.id}>{model.openWeights ? "Yes" : "No"}</td>)}</tr>
+              <tr><th scope="row">Released</th>{models.map((model) => <td key={model.id}>{model.releasedAt ? new Date(model.releasedAt).toLocaleDateString() : "Not listed"}</td>)}</tr>
+              <tr><th scope="row">Editorial score</th>{models.map((model) => <td key={model.id}>{model.rankingScore || "Unranked"} / 100</td>)}</tr>
+              <tr><th scope="row">Benchmarks</th>{models.map((model) => <td key={model.id}>{model.benchmarks.length ? model.benchmarks.map((benchmark) => `${benchmark.name}: ${benchmark.score}${benchmark.source ? ` (${benchmark.source})` : ""}`).join(" · ") : "No results"}</td>)}</tr>
               <tr><th scope="row">Description</th>{models.map((model) => <td key={model.id}>{model.description}</td>)}</tr>
             </tbody>
           </table>
