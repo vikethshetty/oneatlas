@@ -35,18 +35,29 @@ export function upsertProvider(input: Pick<ModelWriteInput, "providerSlug" | "pr
 type ModelFields = Omit<ModelWriteInput, "slug" | "providerSlug" | "providerName"> & { providerId: string };
 
 export function createModelRecord(slug: string, fields: ModelFields) {
-  const { benchmarks, ...modelFields } = fields;
+  const { benchmarks, releasedAt, ...modelFields } = fields;
   return getPrismaClient().model.create({
-    data: { slug, ...modelFields, badge: modelFields.badge ?? null, benchmarks: { create: benchmarks } },
+    data: {
+      slug,
+      ...modelFields,
+      releasedAt: releasedAt ? new Date(releasedAt) : null,
+      badge: modelFields.badge ?? null,
+      benchmarks: { create: benchmarks },
+    },
     include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
   });
 }
 
 export function updateModelRecord(slug: string, fields: ModelFields) {
-  const { benchmarks, ...modelFields } = fields;
+  const { benchmarks, releasedAt, ...modelFields } = fields;
   return getPrismaClient().model.update({
     where: { slug },
-    data: { ...modelFields, badge: modelFields.badge ?? null, benchmarks: { deleteMany: {}, create: benchmarks } },
+    data: {
+      ...modelFields,
+      releasedAt: releasedAt ? new Date(releasedAt) : null,
+      badge: modelFields.badge ?? null,
+      benchmarks: { deleteMany: {}, create: benchmarks },
+    },
     include: { provider: { select: { name: true, slug: true } }, benchmarks: { orderBy: { name: "asc" } } },
   });
 }
