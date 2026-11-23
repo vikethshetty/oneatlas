@@ -1,3 +1,5 @@
+import { attachDatabasePool } from "@vercel/functions";
+import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
@@ -9,12 +11,15 @@ export function getPrismaClient() {
   }
 
   if (!prismaGlobal.oneatlasPrisma) {
-    const adapter = new PrismaPg({
+    const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
+      max: 5,
       connectionTimeoutMillis: 5_000,
       query_timeout: 12_000,
       statement_timeout: 12_000,
     });
+    attachDatabasePool(pool);
+    const adapter = new PrismaPg(pool);
     prismaGlobal.oneatlasPrisma = new PrismaClient({ adapter });
   }
 
